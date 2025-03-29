@@ -225,21 +225,54 @@ server.tool(
 
 // Start the server
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Weather MCP Server running on stdio");
-  
-  // Keep the process running
-  process.on('SIGINT', () => {
-    console.error('Shutting down server...');
-    process.exit(0);
-  });
+  try {
+    const transport = new StdioServerTransport();
+    
+    // Set up error handlers before connecting
+    transport.on('error', (error) => {
+      console.error('Transport error:', error);
+    });
 
-  // Prevent the process from exiting
-  return new Promise(() => {});
+    process.on('uncaughtException', (error) => {
+      console.error('Uncaught exception:', error);
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Unhandled rejection at:', promise, 'reason:', reason);
+    });
+
+    // Connect to the transport
+    await server.connect(transport);
+    console.error('Weather MCP Server running on stdio');
+
+    // Handle graceful shutdown
+    process.on('SIGINT', () => {
+      console.error('Received SIGINT signal');
+      transport.close();
+      process.exit(0);
+    });
+
+    process.on('SIGTERM', () => {
+      console.error('Received SIGTERM signal');
+      transport.close();
+      process.exit(0);
+    });
+
+    // Keep the process alive
+    await new Promise((resolve) => {
+      transport.on('close', () => {
+        console.error('Transport closed');
+        resolve(undefined);
+      });
+    });
+  } catch (error) {
+    console.error('Fatal error in main():', error);
+    process.exit(1);
+  }
 }
 
+// Start the server and handle any errors
 main().catch((error) => {
-  console.error("Fatal error in main():", error);
+  console.error('Error starting server:', error);
   process.exit(1);
 });
