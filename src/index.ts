@@ -228,6 +228,15 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Weather MCP Server running on stdio");
+  
+  // Keep the process running
+  process.on('SIGINT', () => {
+    console.error('Shutting down server...');
+    process.exit(0);
+  });
+
+  // Prevent the process from exiting
+  return new Promise(() => {});
 }
 
 main().catch((error) => {
