@@ -1,11 +1,11 @@
-# Weather CLI Application
+# Weather MCP Server
 
-A command-line interface application that provides weather information and alerts for US locations using the National Weather Service (NWS) API.
+A Model Context Protocol (MCP) server that provides weather information and alerts for US locations using the National Weather Service (NWS) API. This server is designed to be used by AI agents through the Model Context Protocol.
 
 ## Features
 
-- Get weather alerts for any US state
-- Get detailed weather forecasts for any US location using coordinates
+- Tool for getting weather alerts for any US state
+- Tool for getting detailed weather forecasts for any US location using coordinates
 - Supports temperature, wind conditions, and short forecast descriptions
 - Real-time data from the National Weather Service
 
@@ -18,8 +18,8 @@ A command-line interface application that provides weather information and alert
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/akaramanapp/weather-cli.git
-cd weather-cli
+git clone https://github.com/akaramanapp/weather-mcp-server.git
+cd weather-mcp-server
 ```
 
 2. Install dependencies:
@@ -32,24 +32,47 @@ npm install
 npm run build
 ```
 
-## Usage
+## MCP Tools
 
-The application provides two main commands:
+The server provides two MCP tools that can be used by AI agents:
 
-### Get Weather Alerts
+### get-alerts
 
-Retrieve active weather alerts for a specific US state using the two-letter state code:
+Get weather alerts for a specific US state.
 
-```bash
-weather get-alerts --state CA
+Parameters:
+- `state`: Two-letter state code (e.g., CA, NY)
+
+Example response:
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Active alerts for CA: ..."
+    }
+  ]
+}
 ```
 
-### Get Weather Forecast
+### get-forecast
 
-Get the weather forecast for a specific location using latitude and longitude coordinates:
+Get weather forecast for a specific location using coordinates.
 
-```bash
-weather get-forecast --latitude 37.7749 --longitude -122.4194
+Parameters:
+- `latitude`: Latitude of the location (-90 to 90)
+- `longitude`: Longitude of the location (-180 to 180)
+
+Example response:
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Morning: Temperature: 72°F, Wind: 5mph NW, Partly cloudy..."
+    }
+  ]
+}
 ```
 
 ## Project Structure
@@ -57,7 +80,7 @@ weather get-forecast --latitude 37.7749 --longitude -122.4194
 ```
 weather/
 ├── src/
-│   └── index.ts    # Main application code
+│   └── index.ts    # Main server code with MCP tool implementations
 ├── build/          # Compiled JavaScript files
 ├── package.json    # Project dependencies and scripts
 └── tsconfig.json   # TypeScript configuration
@@ -66,13 +89,14 @@ weather/
 ## Technical Details
 
 - Built with TypeScript
-- Uses the Model Context Protocol SDK for CLI interface
+- Implements Model Context Protocol (MCP) server
+- Uses @modelcontextprotocol/sdk for MCP server implementation
 - Interfaces with the National Weather Service (NWS) API
 - ES2022 target with Node16 module resolution
 
 ## Development
 
-To modify or extend the application:
+To modify or extend the server:
 
 1. Make changes in the `src/index.ts` file
 2. Rebuild the application:
@@ -82,8 +106,8 @@ npm run build
 
 ## Dependencies
 
-- @modelcontextprotocol/sdk: CLI interface framework
-- zod: Runtime type checking and validation
+- @modelcontextprotocol/sdk: MCP server implementation framework
+- zod: Runtime type checking and validation for tool parameters
 - TypeScript: Development dependency for type safety
 
 ## License
@@ -92,6 +116,7 @@ ISC
 
 ## Notes
 
-- This application only works for US locations as it uses the National Weather Service API
+- This server only works for US locations as it uses the National Weather Service API
 - API requests are rate-limited and require a User-Agent header
-- All coordinates should be in decimal degrees format 
+- All coordinates should be in decimal degrees format
+- This is not a standalone CLI application, but rather a server that provides tools for AI agents through the Model Context Protocol 
