@@ -227,12 +227,8 @@ server.tool(
 async function main() {
   try {
     const transport = new StdioServerTransport();
-    
-    // Set up error handlers before connecting
-    transport.on('error', (error) => {
-      console.error('Transport error:', error);
-    });
 
+    // Set up error handlers before connecting
     process.on('uncaughtException', (error) => {
       console.error('Uncaught exception:', error);
     });
@@ -248,23 +244,16 @@ async function main() {
     // Handle graceful shutdown
     process.on('SIGINT', () => {
       console.error('Received SIGINT signal');
-      transport.close();
       process.exit(0);
     });
 
     process.on('SIGTERM', () => {
       console.error('Received SIGTERM signal');
-      transport.close();
       process.exit(0);
     });
 
     // Keep the process alive
-    await new Promise((resolve) => {
-      transport.on('close', () => {
-        console.error('Transport closed');
-        resolve(undefined);
-      });
-    });
+    await new Promise(() => {});
   } catch (error) {
     console.error('Fatal error in main():', error);
     process.exit(1);
